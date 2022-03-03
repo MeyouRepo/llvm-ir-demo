@@ -1,10 +1,17 @@
-use std::os::raw::c_uint;
+//! https://www.jianshu.com/p/ebfb2c0325ab
+//! https://blog.csdn.net/qq_42570601/article/details/108007986
+
+use std::os::raw::{c_uint, c_ulonglong};
+use std::str::FromStr;
 
 use llvm_sys::core::{
-    LLVMAddFunction, LLVMContextCreate, LLVMContextDispose, LLVMDisposeModule, LLVMDumpModule,
-    LLVMFunctionType, LLVMInt8TypeInContext, LLVMModuleCreateWithName, LLVMPointerType,
-    LLVMSetFunctionCallConv, LLVMVoidTypeInContext,
+    LLVMAddFunction, LLVMAddGlobal, LLVMConstInt, LLVMContextCreate, LLVMContextDispose,
+    LLVMDisposeModule, LLVMDumpModule, LLVMFunctionType, LLVMGetNamedGlobal,
+    LLVMInt64TypeInContext, LLVMInt8TypeInContext, LLVMModuleCreateWithName, LLVMPointerType,
+    LLVMSetAlignment, LLVMSetFunctionCallConv, LLVMSetGlobalConstant, LLVMSetInitializer,
+    LLVMSetLinkage, LLVMSetVisibility, LLVMVoidTypeInContext,
 };
+
 use llvm_sys::prelude::{LLVMBool, LLVMContextRef, LLVMModuleRef, LLVMTypeRef, LLVMValueRef};
 use llvm_sys::LLVMCallConv;
 
@@ -59,6 +66,41 @@ fn declare_llvm_va_end(mod_ref: LLVMModuleRef, ctx_ref: LLVMContextRef) -> LLVMV
     llvm_va_end_fn
 }
 
+fn describe_bits(
+    mod_ref: LLVMModuleRef,
+    ctx_ref: LLVMContextRef,
+    number: &str,
+) -> Option<LLVMValueRef> {
+    let number_name = char_const_ptr!(format!("Core.Types.Bits({}).this.number", number));
+    let named_global = unsafe { LLVMGetNamedGlobal(mod_ref, number_name) };
+
+    if named_global.is_null() {
+        let bits_number: LLVMValueRef =
+            unsafe { LLVMAddGlobal(mod_ref, LLVMInt64TypeInContext(ctx_ref), number_name) };
+
+        unsafe { LLVMSetLinkage(bits_number, llvm_sys::LLVMLinkage::LLVMPrivateLinkage) };
+        unsafe { LLVMSetAlignment(bits_number, core::mem::size_of::<c_ulonglong>() as c_uint) };
+        unsafe { LLVMSetVisibility(bits_number, llvm_sys::LLVMVisibility::LLVMHiddenVisibility) };
+
+        unsafe { LLVMSetGlobalConstant(bits_number, llvm_bool!(true)) };
+
+        unsafe {
+            LLVMSetInitializer(
+                bits_number,
+                LLVMConstInt(
+                    LLVMInt64TypeInContext(ctx_ref),
+                    c_ulonglong::from_str(number).unwrap(),
+                    llvm_bool!(false),
+                ),
+            );
+        };
+
+        return Some(bits_number);
+    }
+
+    None
+}
+
 fn main() {
     let mod_ref: LLVMModuleRef = unsafe { LLVMModuleCreateWithName(char_const_ptr!("Core.Types")) };
     let ctx_ref: LLVMContextRef = unsafe { LLVMContextCreate() };
@@ -66,8 +108,24 @@ fn main() {
     declare_llvm_va_start(mod_ref, ctx_ref);
     declare_llvm_va_end(mod_ref, ctx_ref);
 
+    describe_bits(mod_ref, ctx_ref, "1");
+
     unsafe { LLVMDumpModule(mod_ref) };
 
     unsafe { LLVMDisposeModule(mod_ref) };
     unsafe { LLVMContextDispose(ctx_ref) };
 }
+
+/* LLVMValueRef llvmGenLocalStringVar(const char* data, int len)
+{
+    LLVMValueRef glob = LLVMAddGlobal(mod, LLVMArrayType(LLVMInt8Type(), len), "string");
+
+    // set as internal linkage and constant
+    LLVMSetLinkage(glob, LLVMInternalLinkage);
+    LLVMSetGlobalConstant(glob, TRUE);
+
+    // Initialize with string:
+    LLVMSetInitializer(glob, LLVMConstString(data, len, TRUE));
+
+    return glob;
+}  */
