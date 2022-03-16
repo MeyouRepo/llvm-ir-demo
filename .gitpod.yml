@@ -7,5 +7,6 @@ tasks:
       cargo install llvmenv
       llvmenv init
       llvmenv build-entry 13.0.0
+      cargo build
     command: |
       cargo watch -x run
