@@ -4,9 +4,8 @@
 
 tasks:
   - init: |
-      cargo install llvmenv
-      llvmenv init
-      llvmenv build-entry 13.0.0
-      cargo build
+      docker pull liangchengj/amuse-lang-environment
+      docker run -d --name="amuse-lang-gitpod" -v "$PWD:/root/llvm-ir-demo" liangchengj/amuse-lang-environment
+      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && cargo build"
     command: |
-      cargo watch -x run
+      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && cargo watch -x run"
