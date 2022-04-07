@@ -8,9 +8,8 @@ tasks:
       sudo cp -f "$PWD/llvm-13.sources.list" /etc/apt/sources.list.d/llvm.list
       wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       sudo apt-get update -y
-      sudo apt-get install llvm-13-dev -y
+      sudo apt-get install llvm-13-dev libclang-common-13-dev -y
       export LLVM_SYS_130_PREFIX=/usr/lib/llvm-13
       sudo ln -snf /usr/lib/llvm-13/bin/llvm-config /usr/bin/llvm-config
-      cargo build
     command: |
-      cargo watch -x run
+      cargo run
