@@ -6,6 +6,6 @@ tasks:
   - init: |
       docker pull liangchengj/amuse-lang-environment
       docker run -itd --name="amuse-lang-gitpod" -v "$PWD:/root/llvm-ir-demo" liangchengj/amuse-lang-environment
-      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && cargo build"
+      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && /root/.cargo/bin/cargo build"
     command: |
-      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && cargo watch -x run"
+      docker exec amuse-lang-gitpod bash -c "cd /root/llvm-ir-demo && /root/.cargo/bin/cargo watch -x run"
