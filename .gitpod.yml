@@ -2,14 +2,17 @@
 # Please adjust to your needs (see https://www.gitpod.io/docs/config-gitpod-file)
 # and commit this file to your remote git repository to share the goodness with others.
 
+image: liangchengj/amuse-lang-environment:latest
+
 tasks:
   - init: |
-      sudo apt-get update -y
-      sudo cp -f "$PWD/llvm-13.sources.list" /etc/apt/sources.list.d/llvm.list
-      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-      sudo apt-get update -y
-      sudo apt-get install llvm-13-dev libclang-common-13-dev -y
-      export LLVM_SYS_130_PREFIX=/usr/lib/llvm-13
-      sudo ln -snf /usr/lib/llvm-13/bin/llvm-config /usr/bin/llvm-config
+      # sudo apt-get update -y
+      # sudo cp -f "$PWD/llvm-13.sources.list" /etc/apt/sources.list.d/llvm.list
+      # wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+      # sudo apt-get update -y
+      # sudo apt-get install llvm-13-dev libclang-common-13-dev -y
+      # export LLVM_SYS_130_PREFIX=/usr/lib/llvm-13
+      # sudo ln -snf /usr/lib/llvm-13/bin/llvm-config /usr/bin/llvm-config
+      source $HOME/.cargo/env
     command: |
       cargo run
