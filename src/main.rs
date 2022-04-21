@@ -1,6 +1,7 @@
 //! https://www.jianshu.com/p/ebfb2c0325ab
 //! https://blog.csdn.net/qq_42570601/article/details/108007986
 
+use std::ffi::CString;
 use std::os::raw::{c_uint, c_ulonglong};
 use std::str::FromStr;
 
@@ -18,7 +19,7 @@ use llvm_sys::LLVMCallConv;
 #[macro_export(local_inner_macros)]
 macro_rules! char_const_ptr {
     ($str:expr) => {{
-        std::format!("{}\0", $str).as_bytes().as_ptr() as *const _
+        CString::new($str).unwrap().into_raw()
     }};
 }
 
