@@ -6,6 +6,7 @@ image: liangchengj/amuse-lang-environment:llvmenv
 
 tasks:
   - init: |
+      export PATH="$HOME/.cargo/bin:$PATH"
       cargo build
     command: |
       cargo run
