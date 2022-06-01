@@ -8,7 +8,7 @@ tasks:
   - init: |
       export PATH="$HOME/.cargo/bin:$PATH"
       cargo build
-      curl -L -O https://ziglang.org/download/0.9.1/zig-linux-x86_64-0.9.1.tar.xz
+      curl -L -O -s https://ziglang.org/download/0.9.1/zig-linux-x86_64-0.9.1.tar.xz
       tar -xJf zig-linux-x86_64-0.9.1.tar.xz
       export PATH="$PWD/zig-linux-x86_64-0.9.1:$PATH"
     command: |
